@@ -1,0 +1,226 @@
+html
+    head
+        title= title
+        meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
+        meta(name="author" content="Chris McCormack")
+
+        link(rel="stylesheet" type="text/css" href="./styles/styles.css")
+        link(rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500")
+
+        link(rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png")
+        link(rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png")
+        link(rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png")
+        link(rel="manifest" href="/images/site.webmanifest")
+        link(rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#5bbad5")
+        link(rel="shortcut icon" href="/images/favicon.ico")
+        meta(name="msapplication-TileColor" content="#da532c")
+        meta(name="msapplication-config" content="/images/browserconfig.xml")
+        meta(name="theme-color" content="#ffffff")
+    body
+        header
+            h1= header
+
+        main
+            section#example_usage
+                span.section-title Example Usage
+                table
+                    tr
+                        th API
+                        th GET
+                        th POST
+                        th DELETE
+                    tr
+                        td
+                            pre /api/books
+                        td list all books
+                        td add new book
+                        td delete all books
+                    tr
+                        td
+                            pre /api/books/Hatchet
+                        td show book Hatchet
+                        td add comment to Hatchet
+                        td delete Hatchet
+
+            section#example_return
+                span.section-title Example Return
+                pre GET /api/books
+                pre.
+                    [{
+                        commentcount: 0,
+                        _id: '5bb7db3505c9f910f1a04381',
+                        title: 'My Side of the Mountain'
+                    },
+                    {
+                        commentcount: 1,
+                        _id: '5bb7db3505c9f910f1a04380',
+                        title: 'Hatchet'
+                    }]
+                pre GET /api/books/5bb7dbbc54969910fe991095
+                pre.
+                    {
+                        comments: ['Favorite childhood book!'],
+                        _id: '5bb7dbbc54969910fe991095',
+                        title: 'Hatchet'
+                    }
+            section#try_it
+                span.section-title Try It Yourself!
+                form#new_book_form(action="/api/books/" method="POST")
+                    span.form-title add new book
+                    div.input-row
+                        label(for="title_input") Book Title
+                            span  - Required
+                        input#title_input(type="text" placeholder="My Side of the Mountain" name="title" required)
+                    button.submit-btn(type="submit") Add
+                    
+                    div.input-row
+                        pre#try_it_new.output.hidden
+
+                form#add_comment_form(action="/api/books/:_id" method="POST")
+                    span.form-title add comment to book
+                    div.input-row
+                        label(for="id_input") Book ID
+                            span  - Required
+                        input#id_input(type="text" placeholder="5bb7dbbc54969910fe991095" name="_id" required)
+                    div.input-row
+                        label(for="comment_input") Comment
+                            span  - Required
+                        input#comment_input(type="text" placeholder="My second favorite childhood book!" name="comment")
+                    button.submit-btn(type="submit") Update
+
+                    div.input-row
+                        pre#try_it_add_comment.output.hidden
+
+   
+                form#view_book_form(action="/api/books/:_id" method="GET")
+                    span.form-title view a single book
+                    div.input-row
+                        label(for="id_view_input") Book ID
+                            span  - Required
+                        input#id_view_input(type="text" placeholder="5bb7dbbc54969910fe991095" name="_id" required)
+                    button.submit-btn(type="submit") View Book
+                
+                    div.input-row
+                        pre#try_it_view.output.hidden
+                
+
+                form#delete_book_form(action="/api/books/:_id" method="DELETE")
+                    span.form-title delete book
+                    div.input-row
+                        label(for="delete_id_input") Book ID
+                            span  - Required
+                        input#delete_id_input(type="text" placeholder="5bb7dbbc54969910fe991095" name="_id" required )
+                    button.submit-btn(type="submit") Delete
+                
+                    div.input-row
+                        pre#try_it_delete.output.hidden
+
+                form#delete_books_form(action="/api/books" method="DELETE")
+                    span.form-title delete all books
+                    div.input-row
+                    button.submit-btn(type="submit") Delete All
+                    
+                    div.input-row
+                        pre#try_it_delete_all.output.hidden
+
+
+                form#view_all_books_form(action="/api/books" method="GET")
+                    span.form-title view all books
+                    div.input-row
+                    button.submit-btn(type="submit") View All
+                
+                    div.input-row
+                        pre#try_it_view_all.output.hidden
+
+script.
+    forms = document.querySelectorAll('form')
+    outputs = document.querySelectorAll('.output')
+    forms.forEach(form => {
+        form.addEventListener('submit', e => {
+            outputs.forEach(output => {
+                output.classList.add('hidden')
+                output.textContent = ''
+            })
+        })
+    })
+
+    const displayResponse = (output, response) => {
+        output.textContent = JSON.stringify(response, null, 2)
+        output.classList.remove('hidden')
+    }
+
+    const fetchJSON = (endpoint, method, body=undefined) => (
+        fetch(endpoint, {
+            method,
+            headers: { "Content-Type": "application/json; charset=utf-8" },
+            body: JSON.stringify(body),
+        })
+            .then(res => res.text())
+            .then(text => {
+                try {
+                    return JSON.parse(text)
+                } catch(e) {
+                    return text
+                }
+            })
+    )
+
+    document.getElementById('new_book_form').addEventListener('submit', e => {
+        e.preventDefault()
+        const {method, title} = e.target
+        const endpoint = e.target.getAttribute('action')
+        const output = document.getElementById('try_it_new')
+        const body = {
+            title: title.value,
+        }
+
+        fetchJSON(endpoint, method, body).then(displayResponse.bind(null, output))
+    })
+
+    document.getElementById('add_comment_form').addEventListener('submit', e => {
+        e.preventDefault()
+        const {method, _id, comment} = e.target
+        const endpoint = e.target.getAttribute('action').replace(':_id', _id.value)
+        const output = document.getElementById('try_it_add_comment')
+        const body = {
+            _id: _id.value,
+            comment: comment.value,
+        }
+
+        fetchJSON(endpoint, method, body).then(displayResponse.bind(null, output))
+    })
+
+    document.getElementById('view_book_form').addEventListener('submit', e => {
+        e.preventDefault()
+        const {method, _id, comment} = e.target
+        const endpoint = e.target.getAttribute('action').replace(':_id', _id.value)
+        const output = document.getElementById('try_it_view')
+
+        fetchJSON(endpoint, method).then(displayResponse.bind(null, output))
+    })
+
+    document.getElementById('delete_book_form').addEventListener('submit', e => {
+        e.preventDefault()
+        const {_id} = e.target
+        const endpoint = e.target.getAttribute('action').replace(':_id', _id.value)
+        const output = document.getElementById('try_it_delete')
+
+        fetchJSON(endpoint, 'DELETE').then(displayResponse.bind(null, output))
+    })
+
+    document.getElementById('delete_books_form').addEventListener('submit', e => {
+        e.preventDefault()
+        const endpoint = e.target.getAttribute('action')
+        const output = document.getElementById('try_it_delete_all')
+
+        fetchJSON(endpoint, 'DELETE').then(displayResponse.bind(null, output))
+    })
+
+    document.getElementById('view_all_books_form').addEventListener('submit', e => {
+        e.preventDefault()
+        const {method} = e.target
+        const endpoint = e.target.getAttribute('action')
+        const output = document.getElementById('try_it_view_all')
+
+        fetchJSON(endpoint, method).then(displayResponse.bind(null, output))
+    })
