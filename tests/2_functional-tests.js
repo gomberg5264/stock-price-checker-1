@@ -22,28 +22,41 @@ suite('Functional Tests', function() {
         .get('/api/stock-prices')
         .query({stock: 'goog'})
         .end(function(err, res){
-          
-          //complete this one too
-          
+          assert.ok(res.status)
+          console.log('body', res.body)
           done();
         });
       });
       
-      test('1 stock with like', function(done) {
+      // test('1 stock with like', function(done) {
         
-      });
+      // });
       
-      test('1 stock with like again (ensure likes arent double counted)', function(done) {
+      // test('1 stock with like again (ensure likes arent double counted)', function(done) {
         
-      });
+      // });
       
-      test('2 stocks', function(done) {
+      // test('2 stocks', function(done) {
         
-      });
+      // });
       
-      test('2 stocks with like', function(done) {
+      // test('2 stocks with like', function(done) {
         
-      });
+      // });
+
+      test('0 stocks', function(done) {
+        chai.request(server)
+          .get('/api/stock-prices')
+          .query({})
+          .end((err, res) => {
+            assert.ok(res.status)
+            assert.property(res.body, 'success', 'Response must have \'success\' property')
+            assert.property(res.body, 'error', 'Response must have \'error\' property')
+            assert.isFalse(res.body.success, 'Response success must be false')
+            assert.equal(res.body.error, 'Must include valid stock in request')
+            done()
+          })
+      })
       
     });
 
