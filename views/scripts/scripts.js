@@ -33,7 +33,6 @@ const fetchJSON = (endpoint, method, body = undefined) => (
 document.getElementById('single_stock_form').addEventListener('submit', e => {
   e.preventDefault()
   const { method, symbol, like } = e.target
-  console.log(method, symbol.value, like.checked)
   const endpoint = `${e.target.getAttribute('action')}?stock=${symbol.value}&like=${like.checked}`
   const output = document.getElementById('try_it_single_stock')
 
@@ -44,7 +43,6 @@ document.getElementById('single_stock_form').addEventListener('submit', e => {
 document.getElementById('multiple_stock_form').addEventListener('submit', e => {
   e.preventDefault()
   const { method, symbol_a, symbol_b, like } = e.target
-  console.log(method, symbol_a.value, symbol_b.value, like.checked)
   const endpoint = e.target.getAttribute('action') + `?stock=${symbol_a.value}&stock=${symbol_b.value}&like=${like.checked}`
   const output = document.getElementById('try_it_multiple_stock')
 
