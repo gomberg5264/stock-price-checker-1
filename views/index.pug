@@ -13,6 +13,7 @@ html
         link(rel="manifest" href="/images/site.webmanifest")
         link(rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#5bbad5")
         link(rel="shortcut icon" href="/images/favicon.ico")
+
         meta(name="msapplication-TileColor" content="#da532c")
         meta(name="msapplication-config" content="/images/browserconfig.xml")
         meta(name="theme-color" content="#ffffff")
@@ -23,204 +24,55 @@ html
         main
             section#example_usage
                 span.section-title Example Usage
-                table
-                    tr
-                        th API
-                        th GET
-                        th POST
-                        th DELETE
-                    tr
-                        td
-                            pre /api/books
-                        td list all books
-                        td add new book
-                        td delete all books
-                    tr
-                        td
-                            pre /api/books/Hatchet
-                        td show book Hatchet
-                        td add comment to Hatchet
-                        td delete Hatchet
+                pre /api/stock-prices?stock=goog
+                pre /api/stock-prices?stock=goog&like=true
+                pre /api/stock-prices?stock=goog&stock=msft
+                pre /api/stock-prices?stock=goog&stock=msft&like=true
 
             section#example_return
                 span.section-title Example Return
                 pre GET /api/books
+                pre {"stockData":{"stock":"GOOG","price":"1157.35","likes":1}}
                 pre.
-                    [{
-                        commentcount: 0,
-                        _id: '5bb7db3505c9f910f1a04381',
-                        title: 'My Side of the Mountain'
-                    },
-                    {
-                        commentcount: 1,
-                        _id: '5bb7db3505c9f910f1a04380',
-                        title: 'Hatchet'
-                    }]
-                pre GET /api/books/5bb7dbbc54969910fe991095
-                pre.
-                    {
-                        comments: ['Favorite childhood book!'],
-                        _id: '5bb7dbbc54969910fe991095',
-                        title: 'Hatchet'
-                    }
+                    { "stockData":[
+                        { "stock":"AAPL", "price":"224.29", "rel_likes":-1 },
+                        { "stock":"GOOG", "price":"1157.35", "rel_likes":1 }
+                    ]}
             section#try_it
                 span.section-title Try It Yourself!
-                form#new_book_form(action="/api/books/" method="POST")
-                    span.form-title add new book
+                form#single_stock_form(action="/api/stock-prices/" method="GET")
+                    span.form-title Get price and likes of a single stock
                     div.input-row
-                        label(for="title_input") Book Title
+                        label(for="title_input") Stock Symbol
                             span  - Required
-                        input#title_input(type="text" placeholder="My Side of the Mountain" name="title" required)
-                    button.submit-btn(type="submit") Add
+                        input(type="text" placeholder="AAPL" name="symbol" required minLength="4" maxLength="5")
+
+                    div.input-row.checkboxes
+                        input(type="checkbox" name="like" value="Like Stock")
+                        label(for="like_single_input") Like Stock?
+                    button.submit-btn(type="submit") Get Price!
                     
                     div.input-row
-                        pre#try_it_new.output.hidden
+                        pre#try_it_single_stock.output.hidden
 
-                form#add_comment_form(action="/api/books/:_id" method="POST")
-                    span.form-title add comment to book
+
+                form#multiple_stock_form(action="/api/stock-prices/" method="GET")
+                    span.form-title Compare multiple stocks and get relative likes
                     div.input-row
-                        label(for="id_input") Book ID
+                        label(for="symbol_a_input") Stock Symbol
                             span  - Required
-                        input#id_input(type="text" placeholder="5bb7dbbc54969910fe991095" name="_id" required)
+                        input#symbol_a_input(type="text" placeholder="AAPL" name="symbol_a" required minLength="4" maxLength="5")
                     div.input-row
-                        label(for="comment_input") Comment
+                        label(for="symbol_b_input") Stock Symbol
                             span  - Required
-                        input#comment_input(type="text" placeholder="My second favorite childhood book!" name="comment")
-                    button.submit-btn(type="submit") Update
+                        input#symbol_a_input(type="text" placeholder="GOOG" name="symbol_b" required minLength="4" maxLength="5")
 
-                    div.input-row
-                        pre#try_it_add_comment.output.hidden
-
-   
-                form#view_book_form(action="/api/books/:_id" method="GET")
-                    span.form-title view a single book
-                    div.input-row
-                        label(for="id_view_input") Book ID
-                            span  - Required
-                        input#id_view_input(type="text" placeholder="5bb7dbbc54969910fe991095" name="_id" required)
-                    button.submit-btn(type="submit") View Book
-                
-                    div.input-row
-                        pre#try_it_view.output.hidden
-                
-
-                form#delete_book_form(action="/api/books/:_id" method="DELETE")
-                    span.form-title delete book
-                    div.input-row
-                        label(for="delete_id_input") Book ID
-                            span  - Required
-                        input#delete_id_input(type="text" placeholder="5bb7dbbc54969910fe991095" name="_id" required )
-                    button.submit-btn(type="submit") Delete
-                
-                    div.input-row
-                        pre#try_it_delete.output.hidden
-
-                form#delete_books_form(action="/api/books" method="DELETE")
-                    span.form-title delete all books
-                    div.input-row
-                    button.submit-btn(type="submit") Delete All
+                    div.input-row.checkboxes
+                        input#like_multiple_input(type="checkbox" name="like" value="Like Stocks")
+                        label(for="like_multiple_input") Like Stocks?
+                    button.submit-btn(type="submit") Get Prices!
                     
                     div.input-row
-                        pre#try_it_delete_all.output.hidden
+                        pre#try_it_multiple_stock.output.hidden
 
-
-                form#view_all_books_form(action="/api/books" method="GET")
-                    span.form-title view all books
-                    div.input-row
-                    button.submit-btn(type="submit") View All
-                
-                    div.input-row
-                        pre#try_it_view_all.output.hidden
-
-script.
-    forms = document.querySelectorAll('form')
-    outputs = document.querySelectorAll('.output')
-    forms.forEach(form => {
-        form.addEventListener('submit', e => {
-            outputs.forEach(output => {
-                output.classList.add('hidden')
-                output.textContent = ''
-            })
-        })
-    })
-
-    const displayResponse = (output, response) => {
-        output.textContent = JSON.stringify(response, null, 2)
-        output.classList.remove('hidden')
-    }
-
-    const fetchJSON = (endpoint, method, body=undefined) => (
-        fetch(endpoint, {
-            method,
-            headers: { "Content-Type": "application/json; charset=utf-8" },
-            body: JSON.stringify(body),
-        })
-            .then(res => res.text())
-            .then(text => {
-                try {
-                    return JSON.parse(text)
-                } catch(e) {
-                    return text
-                }
-            })
-    )
-
-    document.getElementById('new_book_form').addEventListener('submit', e => {
-        e.preventDefault()
-        const {method, title} = e.target
-        const endpoint = e.target.getAttribute('action')
-        const output = document.getElementById('try_it_new')
-        const body = {
-            title: title.value,
-        }
-
-        fetchJSON(endpoint, method, body).then(displayResponse.bind(null, output))
-    })
-
-    document.getElementById('add_comment_form').addEventListener('submit', e => {
-        e.preventDefault()
-        const {method, _id, comment} = e.target
-        const endpoint = e.target.getAttribute('action').replace(':_id', _id.value)
-        const output = document.getElementById('try_it_add_comment')
-        const body = {
-            _id: _id.value,
-            comment: comment.value,
-        }
-
-        fetchJSON(endpoint, method, body).then(displayResponse.bind(null, output))
-    })
-
-    document.getElementById('view_book_form').addEventListener('submit', e => {
-        e.preventDefault()
-        const {method, _id, comment} = e.target
-        const endpoint = e.target.getAttribute('action').replace(':_id', _id.value)
-        const output = document.getElementById('try_it_view')
-
-        fetchJSON(endpoint, method).then(displayResponse.bind(null, output))
-    })
-
-    document.getElementById('delete_book_form').addEventListener('submit', e => {
-        e.preventDefault()
-        const {_id} = e.target
-        const endpoint = e.target.getAttribute('action').replace(':_id', _id.value)
-        const output = document.getElementById('try_it_delete')
-
-        fetchJSON(endpoint, 'DELETE').then(displayResponse.bind(null, output))
-    })
-
-    document.getElementById('delete_books_form').addEventListener('submit', e => {
-        e.preventDefault()
-        const endpoint = e.target.getAttribute('action')
-        const output = document.getElementById('try_it_delete_all')
-
-        fetchJSON(endpoint, 'DELETE').then(displayResponse.bind(null, output))
-    })
-
-    document.getElementById('view_all_books_form').addEventListener('submit', e => {
-        e.preventDefault()
-        const {method} = e.target
-        const endpoint = e.target.getAttribute('action')
-        const output = document.getElementById('try_it_view_all')
-
-        fetchJSON(endpoint, method).then(displayResponse.bind(null, output))
-    })
+        script(src="scripts/scripts.js")
