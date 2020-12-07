@@ -13,7 +13,7 @@ module.exports = () => {
   router.get("/wipeticker", (req, res) => {
     Ticker.deleteMany({}, err => {
       if (err) return Error(err.message)
-      const message = "Successfully wiped 'books' collection"
+      const message = "Successfully wiped 'tickers' collection"
       res.json({ success: true, message, })
     })
   })
