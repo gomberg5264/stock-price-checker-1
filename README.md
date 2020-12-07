@@ -1,6 +1,7 @@
 # stock-price-checker
 Stock price checker that can also compare two stocks and allow users to like stocks
 
+## This App currently does not work as the API provider now requires an API key.
 
 ### User Stories:
 - [X] Set the content security policies to only allow loading of scripts and css from your server.
